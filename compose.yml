@@ -1,3 +1,13 @@
+x-simulator: &simulator
+  image: smarthome-simulator
+  build: ./simulator
+  init: true
+  restart: unless-stopped
+  depends_on:
+    - api
+  networks:
+    - backend
+
 services:
   db:
     image: postgres:18.4
@@ -11,6 +21,7 @@ services:
       - backend
     ports:
       - "127.0.0.1:5433:5432"
+
   api:
     image: smarthome-api
     build:
@@ -33,6 +44,22 @@ services:
       - frontend
     ports:
       - "8000:8000"
+
+  sim-kitchen:
+    <<: *simulator
+    environment:
+      ROOM: kitchen
+      DEVICES: temp_humidity,illuminance,motion,gas
+      BACKEND_URL: http://api:8000
+      TZ: Europe/Warsaw
+
+  sim-bedroom:
+    <<: *simulator
+    environment:
+      ROOM: bedroom
+      DEVICES: temp_humidity,illuminance,motion
+      BACKEND_URL: http://api:8000
+      TZ: Europe/Warsaw
 
 volumes:
   postgres_data:
