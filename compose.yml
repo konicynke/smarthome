@@ -10,10 +10,33 @@ services:
     networks:
       - backend
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
+  api:
+    image: smarthome-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    init: true
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+    volumes:
+    - type: bind
+      source: ./backend
+      target: /app
+    networks:
+      - backend
+      - frontend
+    ports:
+      - "8000:8000"
 
 volumes:
   postgres_data:
 
 networks:
   backend:
+  frontend:
