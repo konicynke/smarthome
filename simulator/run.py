@@ -9,16 +9,19 @@ from devices import DEVICE_TYPES
 ROOM = os.environ["ROOM"]
 DEVICE_NAMES = [name.strip() for name in os.environ["DEVICES"].split(",") if name.strip()]
 HEARTBEAT_INTERVAL = int(os.getenv("HEARTBEAT_INTERVAL") or 60)
+READ_INTERVAL = int(os.getenv("READ_INTERVAL") or 10)
 TICK = 1.0
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
 def build_devices():
-    return [
-        (f"{ROOM}-{name}", DEVICE_TYPES[name](random.Random(f"{ROOM}-{name}")))
-        for name in DEVICE_NAMES
-    ]
+    devices = []
+    for name in DEVICE_NAMES:
+        cls = DEVICE_TYPES[name]
+        device_id = f"{ROOM}-{cls.sensor}"
+        devices.append((device_id, cls(random.Random(device_id))))
+    return devices
 
 
 def main():
@@ -31,7 +34,7 @@ def main():
         now = time.monotonic()
         for device_id, device in devices:
             elapsed = now - last_sent.get(device_id, float("-inf"))
-            if not device.binary and elapsed < device.interval:
+            if not device.binary and elapsed < READ_INTERVAL:
                 continue
             values = device.read()
             if device.binary and values == last_values.get(device_id) and elapsed < HEARTBEAT_INTERVAL:

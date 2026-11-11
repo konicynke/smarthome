@@ -46,6 +46,7 @@ services:
     environment:
       ROOM: kitchen
       DEVICES: temp_humidity,illuminance,motion,gas
+      READ_INTERVAL: "10"
       BACKEND_URL: http://backend:8000
       TZ: Europe/Warsaw
 
@@ -54,6 +55,7 @@ services:
     environment:
       ROOM: bedroom
       DEVICES: temp_humidity,illuminance,motion
+      READ_INTERVAL: "15"
       BACKEND_URL: http://backend:8000
       TZ: Europe/Warsaw
 

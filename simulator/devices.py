@@ -11,9 +11,9 @@ def _daylight():
 
 
 class TempHumidity:
-    type = "aht20-1"
+    type = "temp_humidity"
+    sensor = "aht20"
     binary = False
-    interval = 10
 
     def __init__(self, rng):
         self._rng = rng
@@ -33,9 +33,9 @@ class TempHumidity:
 
 
 class Illuminance:
-    type = "bh1750-1"
+    type = "illuminance"
+    sensor = "bh1750"
     binary = False
-    interval = 10
 
     def __init__(self, rng):
         self._rng = rng
@@ -46,7 +46,8 @@ class Illuminance:
 
 
 class Motion:
-    type = "pir-1"
+    type = "motion"
+    sensor = "pir"
     binary = True
 
     def __init__(self, rng):
@@ -64,7 +65,8 @@ class Motion:
 
 
 class Gas:
-    type = "gas-1"
+    type = "gas"
+    sensor = "gas"
     binary = True
 
     def __init__(self, rng):
