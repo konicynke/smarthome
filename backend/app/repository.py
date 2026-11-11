@@ -23,11 +23,11 @@ def insert_reading(cur, device_id, values):
     )
 
 
-def list_devices(cur, online_timeout_seconds):
+def list_devices(cur, online_timeout_seconds, device_id=None):
     cur.execute(
         """
         SELECT d.device_id, d.room, d.type, d.source, d.last_seen,
-               d.last_seen > now() - make_interval(secs => %s) AS online,
+               d.last_seen > now() - make_interval(secs => %(timeout)s) AS online,
                r.ts AS last_ts, r.data AS last_data
         FROM devices d
         LEFT JOIN LATERAL (
@@ -36,9 +36,10 @@ def list_devices(cur, online_timeout_seconds):
             ORDER BY ts DESC
             LIMIT 1
         ) r ON true
+        WHERE %(device_id)s::text IS NULL OR d.device_id = %(device_id)s::text
         ORDER BY d.room, d.device_id
         """,
-        (online_timeout_seconds,),
+        {"timeout": online_timeout_seconds, "device_id": device_id},
     )
     devices = []
     for row in cur.fetchall():
@@ -49,6 +50,11 @@ def list_devices(cur, online_timeout_seconds):
         )
         devices.append(row)
     return devices
+
+
+def get_device(cur, device_id, online_timeout_seconds):
+    devices = list_devices(cur, online_timeout_seconds, device_id)
+    return devices[0] if devices else None
 
 
 def get_readings(cur, device_id, ts_from, ts_to, limit):
