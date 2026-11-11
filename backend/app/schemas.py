@@ -28,3 +28,12 @@ class DeviceOut(BaseModel):
     last_seen: datetime
     online: bool
     last_reading: Optional[ReadingOut]
+
+class LoginPayload(BaseModel):
+    username: str
+    password: str
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

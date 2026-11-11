@@ -16,3 +16,6 @@ CORS_ORIGINS = [
     if origin.strip()
 ]
 ONLINE_TIMEOUT_SECONDS = int(os.getenv("ONLINE_TIMEOUT_SECONDS") or 180)
+JWT_SECRET = os.environ["JWT_SECRET"]
+JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES") or 720)
+API_KEY = os.environ["API_KEY"]

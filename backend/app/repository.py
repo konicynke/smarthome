@@ -73,3 +73,20 @@ def get_readings(cur, device_id, ts_from, ts_to, limit):
         {"device_id": device_id, "ts_from": ts_from, "ts_to": ts_to, "limit": limit},
     )
     return cur.fetchall()
+
+def get_user(cur, username):
+    cur.execute(
+        "SELECT id, username, password_hash FROM users WHERE username = %s",
+        (username,),
+    )
+    return cur.fetchone()
+
+
+def create_user(cur, username, password_hash):
+    cur.execute(
+        """
+        INSERT INTO users (username, password_hash) VALUES (%s, %s)
+        ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash
+        """,
+        (username, password_hash),
+    )

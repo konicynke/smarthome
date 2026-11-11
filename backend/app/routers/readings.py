@@ -10,6 +10,7 @@ from app.config import ONLINE_TIMEOUT_SECONDS
 from app.db import get_conn
 from app.live import hub
 from app.schemas import DeviceOut, ReadingOut, ReadingPayload
+from app.security import require_api_key, require_user
 
 router = APIRouter(prefix="/api/readings", tags=["readings"])
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ def store_reading(conn, payload):
         raise
 
 
-@router.post("")
+@router.post("", dependencies=[Depends(require_api_key)])
 async def add_reading(payload: ReadingPayload, conn=Depends(get_conn)):
     try:
         device = await run_in_threadpool(store_reading, conn, payload)
@@ -43,7 +44,7 @@ async def add_reading(payload: ReadingPayload, conn=Depends(get_conn)):
     return {"status": "ok"}
 
 
-@router.get("", response_model=List[ReadingOut])
+@router.get("", response_model=List[ReadingOut], dependencies=[Depends(require_user)])
 def get_readings(
     device_id: str,
     ts_from: Optional[datetime] = Query(None, alias="from"),

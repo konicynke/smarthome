@@ -14,3 +14,10 @@ CREATE TABLE IF NOT EXISTS readings (
 );
 
 CREATE INDEX IF NOT EXISTS readings_device_ts ON readings (device_id, ts DESC);
+
+CREATE TABLE IF NOT EXISTS users (
+    id            BIGSERIAL PRIMARY KEY,
+    username      TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);

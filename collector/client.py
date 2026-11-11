@@ -4,8 +4,10 @@ import os
 import requests
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+API_KEY = os.environ["API_KEY"]
 
 _session = requests.Session()
+_session.headers["X-API-Key"] = API_KEY
 
 
 def send(device_id, room, type_, values):
