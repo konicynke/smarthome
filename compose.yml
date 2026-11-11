@@ -4,7 +4,7 @@ x-simulator: &simulator
   init: true
   restart: unless-stopped
   depends_on:
-    - api
+    - backend
   networks:
     - backend
 
@@ -22,8 +22,8 @@ services:
     ports:
       - "127.0.0.1:5433:5432"
 
-  api:
-    image: smarthome-api
+  backend:
+    image: smarthome-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -35,10 +35,6 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: "5432"
-    volumes:
-    - type: bind
-      source: ./backend
-      target: /app
     networks:
       - backend
       - frontend
@@ -50,7 +46,7 @@ services:
     environment:
       ROOM: kitchen
       DEVICES: temp_humidity,illuminance,motion,gas
-      BACKEND_URL: http://api:8000
+      BACKEND_URL: http://backend:8000
       TZ: Europe/Warsaw
 
   sim-bedroom:
@@ -58,7 +54,7 @@ services:
     environment:
       ROOM: bedroom
       DEVICES: temp_humidity,illuminance,motion
-      BACKEND_URL: http://api:8000
+      BACKEND_URL: http://backend:8000
       TZ: Europe/Warsaw
 
 volumes:
