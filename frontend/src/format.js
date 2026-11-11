@@ -40,7 +40,11 @@ export function formatReading(type, data) {
 }
 
 export function isAlert(type, data) {
-  return Boolean(data) && ((type === "gas" && data.detected) || (type === "motion" && data.motion));
+  return Boolean(data) && type === "gas" && Boolean(data.detected);
+}
+
+export function isActive(type, data) {
+  return Boolean(data) && type === "motion" && Boolean(data.motion);
 }
 
 export function formatTime(ts) {

@@ -65,7 +65,15 @@ const chartOptions = computed(() => {
       x: {
         type: "time",
         adapters: { date: { locale: pl } },
-        time: { tooltipFormat: "d MMM yyyy, HH:mm:ss" },
+        time: {
+          tooltipFormat: "d MMM yyyy, HH:mm:ss",
+          displayFormats: {
+            second: "HH:mm:ss",
+            minute: "HH:mm",
+            hour: "HH:mm",
+            day: "d MMM",
+          },
+        },
         ticks: { color: text, maxRotation: 0, autoSkipPadding: 16 },
         grid: { color: grid },
       },

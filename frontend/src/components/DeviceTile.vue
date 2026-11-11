@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 
-import { TYPE_LABELS, formatReading, formatTime, isAlert } from "../format.js";
+import { TYPE_LABELS, formatReading, formatTime, isActive, isAlert } from "../format.js";
 
 const props = defineProps({
   device: { type: Object, required: true },
@@ -12,13 +12,14 @@ defineEmits(["select"]);
 const data = computed(() => props.device.last_reading?.data);
 const values = computed(() => formatReading(props.device.type, data.value));
 const alert = computed(() => isAlert(props.device.type, data.value));
+const active = computed(() => isActive(props.device.type, data.value));
 </script>
 
 <template>
   <button
     type="button"
     class="device"
-    :class="{ offline: !device.online, alert }"
+    :class="{ offline: !device.online, alert, active }"
     @click="$emit('select', device)"
   >
     <div class="device-head">

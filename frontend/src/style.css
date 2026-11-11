@@ -9,6 +9,7 @@
   --offline: #9aa1b1;
   --alert: #dc2626;
   --alert-bg: #fdecec;
+  --active-bg: #e8f0fe;
   --sim: #7c3aed;
   --real: #0891b2;
   color-scheme: light;
@@ -29,6 +30,7 @@
     --offline: #6b7385;
     --alert: #f87171;
     --alert-bg: #3a1f22;
+  --active-bg: #1c2a44;
     --sim: #a78bfa;
     --real: #22d3ee;
     color-scheme: dark;
@@ -206,6 +208,11 @@ input {
 
 .device:hover {
   border-color: var(--accent);
+}
+
+.device.active {
+  border-color: var(--accent);
+  background: var(--active-bg);
 }
 
 .device.alert {
