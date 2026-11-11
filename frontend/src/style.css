@@ -272,3 +272,69 @@ input {
 .status.offline {
   color: var(--offline);
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 45%);
+  z-index: 10;
+}
+
+.history {
+  width: min(900px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.history-head,
+.history-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.history-bar {
+  align-items: center;
+}
+
+.history-current {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ranges {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ranges button {
+  background: none;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.ranges button + button {
+  border-left: 1px solid var(--border);
+}
+
+.ranges button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.chart {
+  position: relative;
+  height: 320px;
+}

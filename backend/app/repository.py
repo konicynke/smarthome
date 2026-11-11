@@ -74,6 +74,50 @@ def get_readings(cur, device_id, ts_from, ts_to, limit):
     )
     return cur.fetchall()
 
+def get_bucketed_readings(cur, device_id, ts_from, ts_to, bucket_seconds, limit):
+    cur.execute(
+        """
+        SELECT ts, data FROM (
+            SELECT bucket AS ts, jsonb_object_agg(key, value) AS data
+            FROM (
+                SELECT bucket, key,
+                       COALESCE(
+                           to_jsonb(round(avg(num), 2)),
+                           to_jsonb(bool_or(flag))
+                       ) AS value
+                FROM (
+                    SELECT date_bin(make_interval(secs => %(bucket)s), r.ts,
+                                    'epoch'::timestamptz) AS bucket,
+                           kv.key,
+                           CASE WHEN jsonb_typeof(kv.value) = 'number'
+                                THEN (kv.value #>> '{}')::numeric END AS num,
+                           CASE WHEN jsonb_typeof(kv.value) = 'boolean'
+                                THEN (kv.value #>> '{}')::boolean END AS flag
+                    FROM readings r
+                    CROSS JOIN LATERAL jsonb_each(r.data) kv
+                    WHERE r.device_id = %(device_id)s
+                      AND (%(ts_from)s::timestamptz IS NULL OR r.ts >= %(ts_from)s::timestamptz)
+                      AND (%(ts_to)s::timestamptz IS NULL OR r.ts <= %(ts_to)s::timestamptz)
+                ) points
+                GROUP BY bucket, key
+            ) per_key
+            WHERE value IS NOT NULL
+            GROUP BY bucket
+            ORDER BY bucket DESC
+            LIMIT %(limit)s
+        ) latest
+        ORDER BY ts ASC
+        """,
+        {
+            "device_id": device_id,
+            "ts_from": ts_from,
+            "ts_to": ts_to,
+            "bucket": bucket_seconds,
+            "limit": limit,
+        },
+    )
+    return cur.fetchall()
+
 def get_user(cur, username):
     cur.execute(
         "SELECT id, username, password_hash FROM users WHERE username = %s",

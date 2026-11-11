@@ -51,3 +51,11 @@ export async function login(username, password) {
 export function fetchDevices() {
   return request("/api/devices");
 }
+
+export function fetchReadings(deviceId, { from, to, bucket, limit = 5000 } = {}) {
+  const params = new URLSearchParams({ device_id: deviceId, limit: String(limit) });
+  if (from) params.set("from", from.toISOString());
+  if (to) params.set("to", to.toISOString());
+  if (bucket) params.set("bucket", String(bucket));
+  return request(`/api/readings?${params}`);
+}

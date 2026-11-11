@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { fetchDevices } from "../api.js";
+import HistoryPanel from "../components/HistoryPanel.vue";
 import RoomCard from "../components/RoomCard.vue";
 import { useLiveReadings } from "../live.js";
 
@@ -10,6 +11,7 @@ const REFRESH_INTERVAL = 30000;
 const devices = ref(new Map());
 const loading = ref(true);
 const error = ref("");
+const selectedId = ref(null);
 let refreshTimer = null;
 
 const rooms = computed(() => {
@@ -27,6 +29,10 @@ const rooms = computed(() => {
       devices: list.sort((a, b) => a.device_id.localeCompare(b.device_id)),
     }));
 });
+
+const selected = computed(() =>
+  selectedId.value ? devices.value.get(selectedId.value) ?? null : null,
+);
 
 async function refresh() {
   try {
@@ -69,6 +75,14 @@ onBeforeUnmount(() => clearInterval(refreshTimer));
   <p v-else-if="!rooms.length" class="muted">Brak urządzeń. Uruchom collector lub symulatory.</p>
 
   <div class="rooms">
-    <RoomCard v-for="item in rooms" :key="item.room" :room="item.room" :devices="item.devices" />
+    <RoomCard
+      v-for="item in rooms"
+      :key="item.room"
+      :room="item.room"
+      :devices="item.devices"
+      @select="selectedId = $event.device_id"
+    />
   </div>
+
+  <HistoryPanel v-if="selected" :device="selected" @close="selectedId = null" />
 </template>

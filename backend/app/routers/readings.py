@@ -50,7 +50,12 @@ def get_readings(
     ts_from: Optional[datetime] = Query(None, alias="from"),
     ts_to: Optional[datetime] = Query(None, alias="to"),
     limit: int = Query(500, ge=1, le=5000),
+    bucket: Optional[int] = Query(None, ge=1, le=86400),
     conn=Depends(get_conn),
 ):
     with conn.cursor() as cur:
+        if bucket:
+            return repository.get_bucketed_readings(
+                cur, device_id, ts_from, ts_to, bucket, limit
+            )
         return repository.get_readings(cur, device_id, ts_from, ts_to, limit)
